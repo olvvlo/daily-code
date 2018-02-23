@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>jsonp</title>
+</head>
+<body>
+  <p id="data"></p>
+</body>
+<script type="text/javascript">
+  var jsonp = function(src, cb, callback, data) {
+    // 1. create script tag
+    var script = document.createElement("script")
+    // 2. create randomCallback (防止下次 jsonp 请求时覆盖上次请求)
+    var randomCallback = "callback" + parseInt(Math.random() * 10000)
+    // 3. create random global function
+    window[randomCallback] = function(res) {
+      callback(res)
+    }
+    // 4. http://www.baidu.com?callback=randomcallcak
+    src = data ? src + "?" + cb + "=" + randomCallback + "&" + data : src + "?" + cb + "=" + randomCallback
+    script.src = src
+    // 5. mount script
+    document.body.appendChild(script)
+    // 6. script onload success
+    script.onload = function() { //当script加载成功后;
+      setTimeout(function() {
+        // 7. delete script tag
+        script.remove()
+        // 8. delete global function
+        delete window[randomCallback]
+      }, 100)
+    }
+  }
+
+  jsonp('http://localhost:9000', 'callback', function (res) {
+    document.getElementById('data').innerHTML = JSON.stringify(res)
+  })
+</script>
+</html>
