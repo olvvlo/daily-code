@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>省市乡三级联动</title>
+  <script type="text/javascript" src="jquery-3.2.1.js"></script>
+</head>
+<body>
+  <select id="province">
+  </select>
+  <select id="city">
+  </select>
+  <select id="country">
+  </select>
+</body>
+<script type="text/javascript" src="provincesData.js"></script>
+<script type="text/javascript">
+  function AddressSelection () {
+    this.pid = 0
+    this.cid = 0
+    this.init()
+  }
+  $.extend(AddressSelection.prototype, {
+    init: function () {
+      this.createEle()
+    },
+    createEle: function () {
+      this.province = new Province()
+      this.city = new City()
+      this.country = new Country()
+      $(this.province).on('provinceChange', $.proxy(this.handleChangeProvince, this))
+      $(this.city).on('cityChange', $.proxy(this.handleChangeCity, this))
+    },
+    handleChangeProvince: function (e) {
+      this.pid = ~~e.pid
+      this.city.loadData(this.pid)
+      this.country.loadData(this.pid, 0)
+    },
+    handleChangeCity: function (e) {
+      this.country.loadData(this.pid, ~~e.cid)
+    }
+  })
+
+  function Province () {
+    this.ele = $('#province')
+    this.init()
+  }
+  $.extend(Province.prototype, {
+    init: function () {
+      this.loadData()
+      this.bindEvents()
+    },
+    loadData: function () {
+      var html = ''
+      for (var i = 0; i < GP.length; i++) {
+        html += `<option value="${i}">${GP[i]}</option>`
+      }
+      this.ele.append(html)
+    },
+    bindEvents: function () {
+      this.ele.on('change', $.proxy(this.handleChangeItem, this))
+    },
+    handleChangeItem: function (e) {
+      $(this).trigger(new $.Event('provinceChange', {
+        pid: e.target.value
+      }))
+    }
+  })
+
+  function City () {
+    this.ele = $('#city')
+    this.init()
+  }
+  $.extend(City.prototype, {
+    init: function () {
+      this.loadData(0)
+      this.bindEvents()
+    },
+    bindEvents: function () {
+      this.ele.on('change', $.proxy(this.handleChangeItem, this))
+    },
+    handleChangeItem: function (e) {
+      $(this).trigger(new $.Event('cityChange', {
+        cid: e.target.value
+      }))
+    },
+    loadData: function (pid) {
+      var html = ''
+      for (var i = 0; i < GT[pid].length; i++) {
+        html += `<option value="${i}">${GT[pid][i]}</option>`
+      }
+      this.ele.html(html)
+    }
+  })
+
+  function Country () {
+    this.ele = $('#country')
+    this.init()
+  }
+  $.extend(Country.prototype, {
+    init: function () {
+      this.loadData(0, 0)
+    },
+    loadData: function (pid, cid) {
+      var html = ''
+      for (var i = 0; i < GC[pid][cid].length; i++) {
+        html += `<option value="${i}">${GC[pid][cid][i]}</option>`
+      }
+      this.ele.html(html)
+    }
+  })
+
+  new AddressSelection()
+</script>
+</html>
