@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Vue的difineProperty原理</title>
+</head>
+<body>
+  <div id="root">{{name}}</div>
+
+  <script>
+
+
+    /* 命令行中运行app.$data.name = "lee" , 页面会自动变更 */
+
+    function Vue(options) {
+      this.data = {}
+      this.$data = {}
+      this.initData(options)
+    }
+
+    Vue.prototype.initData = function(options) {
+      var this_ = this
+      this.$data.name = "lee"
+      this.$data.name = {
+            get: function() {
+              return this_.data['name'];
+            },
+            set: function(newValue) {
+              this_.data['name']= newValue
+              this_.initView("#root")
+            }
+      }
+
+      if (options.data) {
+        for (var i in options.data) {
+          Object.defineProperty(this.$data, i , {
+            get: function() {
+              return this_.data[i];
+            },
+            set: function(newValue) {
+              this_.data[i]= newValue
+              this_.initView(options.el)
+            },
+            enumerable: true,
+            configurable: true
+          })
+          this.$data[i] = options.data[i]
+        }
+      }
+    }
+
+    Vue.prototype.initView = function(el) {
+      /* 这里省略了很多正则和判断 */
+      el = document.querySelector(el);
+      el.innerHTML = this.data.name
+    }
+
+    var app = new Vue({
+      el: "#root",
+      data: {
+        name: "wiolem"
+      }
+    })
+
+  </script>
+
+
+
+</body>
+</html>
