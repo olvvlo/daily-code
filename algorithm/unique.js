@@ -1,9 +1,7 @@
 const unique = (arr) => {
   const result = []
   return arr.filter((v, i) => {
-    if (typeof v === 'object') {
-      v = JSON.stringify(v)
-    }
+    if (typeof v === 'object') v = JSON.stringify(v)
     if (result.includes(v)) return false
     else {
       result.push(v)
