@@ -1,9 +1,9 @@
 var o = {}
-var temp
+var temp = 0
 Object.defineProperty(o, "a", {
   get : function(){
-    temp = temp + 1
-    return temp
+    console.log('a = ' + (temp + 1))
+    return ++temp
   },
   set : function(newValue){
     temp = newValue
@@ -11,6 +11,5 @@ Object.defineProperty(o, "a", {
   enumerable : true,
   configurable : true
 })
-o.a = 0
 if(o.a === 1 && o.a === 2 && o.a === 3 && o.a === 4) console.log('success')
 // o 换成 window 可在浏览器环境下实现
