@@ -12,5 +12,5 @@ Object.defineProperty(o, "a", {
   configurable : true
 })
 o.a = 0
-if(o.a === 1 && o.a === 2 && o.a === 3) console.log('success')
+if(o.a === 1 && o.a === 2 && o.a === 3 && o.a === 4) console.log('success')
 // o 换成 window 可在浏览器环境下实现
